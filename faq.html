@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ's Text to HTML</title>
+</head>
+
+<body>
+    <textarea id="faq" style="width: 100%; min-height: 30vh;">
+
+    </textarea>
+    <!-- Frågor & svar börjar -->
+    <div id="target" contenteditable></div>
+
+    <div itemscope="" itemtype="https://schema.org/FAQPage" id="text" class="solceller-custom-faq">
+
+    </div>
+    <!-- Frågor & svar slutar -->
+
+    <script type="text/javascript">
+        //UPDATES
+        //make code for faq accept whitespaces and add <p> tags to turn them into paragraphs 
+
+        // document.addEventListener('paste', (e) => {
+        //     e.preventDefault();
+        //     let pastedText = ''
+        //     if (e.clipboardData && e.clipboardData.getData) {
+        //         pastedText = e.clipboardData.getData('text/html');
+        //     }
+        //     document.getElementById('target').innerHTML = pastedText
+        // });
+
+        document.addEventListener("keyup", (e) => {
+
+            // navigator.clipboard.readText().then(clipText => {
+            //     console.log(clipText);
+            // });
+
+            if (e.key == "Enter") {
+                let faq = document.querySelector("#faq").value,
+                    ques,
+                    ans,
+                    numb = 1,
+                    timer = 0,
+                    faqArr = faq.split("\n");
+
+                for (let i = 0; i < faqArr.length - 1; i++) {
+                    if (faqArr[i].charAt(faqArr[i].search(/\?/i)) == "?") {
+                        ques = faqArr[i];
+
+                        timer = 1;
+                    } else {
+                        ans = faqArr[i];
+
+                        if (timer == 1) {
+                            eachQues(ques, ans, numb);
+                            numb++;
+                        }
+                    }
+
+                    if (faqArr.length - 2 == i) {
+                        console.log("done");
+
+                        navigator.clipboard.writeText(document.querySelector(".solceller-custom-faq").outerHTML);
+                        alert('FAQ HTML copied to clipboard!')
+                    }
+                }
+
+                function eachQues(a, b, numb) {
+                    let q = `   
+             <!-- Fråga ${numb} -->
+            <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <h3 itemprop="name">${a}</h3>
+                <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <div itemprop="text">
+        
+                        <div>
+                            ${b}
+                        </div>
+        
+                    </div>
+                </div>
+            </div>`;
+                    //   allQues.push(q);
+                    //   console.log(q);
+                    document
+                        .querySelector(".solceller-custom-faq")
+                        .insertAdjacentHTML("beforeend", q);
+
+                    console.log(b);
+                }
+            }
+        });
+        // This function expects an HTML string and copies it as rich text.
+
+        function copyFormatted(html) {
+            // Create container for the HTML
+            // [1]
+            var container = document.createElement('div')
+            container.innerHTML = html
+
+            // Hide element
+            // [2]
+            container.style.position = 'fixed'
+            container.style.pointerEvents = 'none'
+            container.style.opacity = 0
+
+            // Detect all style sheets of the page
+            var activeSheets = Array.prototype.slice.call(document.styleSheets)
+                .filter(function (sheet) {
+                    return !sheet.disabled
+                })
+
+            // Mount the container to the DOM to make `contentWindow` available
+            // [3]
+            document.body.appendChild(container)
+
+            // Copy to clipboard
+            // [4]
+            window.getSelection().removeAllRanges()
+
+            var range = document.createRange()
+            range.selectNode(container)
+            window.getSelection().addRange(range)
+
+            // [5.1]
+            document.execCommand('copy')
+
+            // [5.2]
+            for (var i = 0; i < activeSheets.length; i++) activeSheets[i].disabled = true
+
+            // [5.3]
+            document.execCommand('copy')
+
+            // [5.4]
+            for (var i = 0; i < activeSheets.length; i++) activeSheets[i].disabled = false
+
+            // Remove the container
+            // [6]
+            document.body.removeChild(container)
+        }
+
+
+        // document.addEventListener('paste', () => copyFormatted(document.querySelector("#faq").outerHTML));
+    </script>
+
+</body>
+
+</html>

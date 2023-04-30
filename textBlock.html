@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=
+    , initial-scale=1.0">
+    <title>Document textBlock</title>
+</head>
+<div id="textData" contenteditable="true" style="border: 3px solid green; min-height: 30vh"></div>
+
+<!-- Frågor & svar börjar -->
+<code id="result"></code>
+
+<body>
+    <script type="text/javascript">
+        //!for internal links use keyword matching to decide the link
+        //!for each highlighted text ~>
+
+        //Functions
+        const _d = (selector) => {
+            return document.querySelector(selector);
+        };
+
+        const _strip = (e) => {
+            let text = "";
+
+            if (e.key == "Enter") {
+
+                // _d('#display').innerHTML = _d('#textBlock').innerHTML;
+                let b = getNodes(_d("#textData").innerHTML);
+                // console.log(_d('#textData').innerHTML);
+                let a = getNodes(b[0].innerHTML);
+                console.log(a);
+
+                console.log(a.length - 1);
+                for (var i = 0; i < a.length; i++) {
+                    console.log(i);
+                    switch (a[i].tagName) {
+                        case "H2":
+                            text = `${text} <h2>${a[i].textContent}</h2>`;
+                            break;
+                        case "H3":
+                            text = `${text} <h3>${a[i].textContent}</h3>`;
+                            break;
+                        case "H4":
+                            text = `${text} <h3>${a[i].textContent}</h3>`;
+                            break;
+                        case "SPAN":
+                            text = `${text} <p>${a[i].textContent}</p>`;
+                        // return;
+                        case "P":
+                            if (a[i].textContent) {
+                                text = `${text} <p>${a[i].textContent}</p>`;
+                            } else {
+                                return;
+                            }
+                        default:
+                            console.log("finished");
+                    }
+
+                    if (a.length - 2 == i) {
+                        console.log("done");
+                        _d("#result").textContent = text;
+                        navigator.clipboard.writeText(text);
+                        console.log(text); //copy to clipboard and force refresh
+                    }
+                }
+            }
+        };
+
+        function getNodes(str) {
+            return new DOMParser().parseFromString(str, "text/html").body.childNodes;
+        }
+
+        //Listeners
+        document.addEventListener("keyup", _strip);
+
+    </script>
+</body>
+
+</html>
